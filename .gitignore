@@ -1,0 +1,4 @@
+# Keep oversized deployment archives local; GitHub blocks files >100MB.
+nageco-site/dist-standalone.zip
+nageco-site/public/uploads.zip
+nageco-site/dist-standalone/public/uploads.zip

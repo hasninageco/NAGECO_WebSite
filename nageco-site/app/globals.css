@@ -1,0 +1,2241 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --nageco-ink: #08111f;
+  --nageco-deep: #0f2747;
+  --nageco-accent: #1f73dd;
+  --nageco-accent-soft: #d7e8ff;
+  --nageco-paper: rgba(255, 255, 255, 0.76);
+  --nageco-line: rgba(15, 39, 71, 0.12);
+  --nageco-shell-width: 1500px;
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  @apply min-h-screen text-black;
+  background: transparent;
+  color: var(--nageco-ink);
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+}
+
+body::before {
+  background-image: var(--global-bg-1, url("/uploads/1772694098901-f9fb9b18-9bda-4f8d-9b17-f4f219629dcf.jpg"));
+  animation: nagecoBackgroundA 14s ease-in-out infinite;
+}
+
+body::after {
+  background-image: var(--global-bg-2, url("/uploads/1772694103125-1cd73b92-24f6-49dc-8ef4-de20fc44246b.jpg"));
+  animation: nagecoBackgroundB 14s ease-in-out infinite;
+}
+
+body.nageco-admin-shell {
+  background: #ffffff;
+}
+
+body.nageco-maintenance-shell {
+  background: #081529;
+}
+
+body.nageco-admin-shell::before,
+body.nageco-admin-shell::after,
+body.nageco-maintenance-shell::before,
+body.nageco-maintenance-shell::after {
+  content: none;
+  animation: none;
+  background-image: none;
+}
+
+body::selection {
+  background: rgba(31, 115, 221, 0.18);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), var(--font-body), system-ui, sans-serif;
+}
+
+.container-page {
+  @apply mx-auto w-full max-w-[var(--nageco-shell-width)] px-2 md:px-3 lg:px-4;
+}
+
+.nageco-hero {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(62, 137, 239, 0.2), transparent 35%),
+    radial-gradient(circle at 90% 20%, rgba(31, 115, 221, 0.14), transparent 36%),
+    #fff;
+}
+
+.nageco-hero-focus {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(235, 243, 255, 0.72), rgba(247, 250, 255, 0.76)),
+    radial-gradient(circle at top right, rgba(31, 115, 221, 0.14), transparent 28%);
+  background-size: 220% 220%;
+  animation: nagecoHeroBgShift 11s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  isolation: isolate;
+  box-shadow: 0 35px 120px -60px rgba(15, 39, 71, 0.45);
+}
+
+.nageco-hero-focus::before {
+  content: "";
+  position: absolute;
+  inset: -14% 2% auto;
+  margin: auto;
+  height: 84%;
+  max-height: 560px;
+  border-radius: 999px;
+  background: radial-gradient(circle at center, rgba(31, 115, 221, 0.28), rgba(31, 115, 221, 0.08) 42%, transparent 72%);
+  filter: blur(34px);
+  opacity: 0.76;
+  z-index: -1;
+  animation: nagecoHeroPulse 7s ease-in-out infinite;
+}
+
+.nageco-hero-focus::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(31, 115, 221, 0.08) 50%, transparent 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 24%);
+  background-size: 220% 100%;
+  z-index: -1;
+  animation: nagecoHeroSweep 9s linear infinite;
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.68));
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(31, 115, 221, 0.16);
+  box-shadow: 0 18px 44px -28px rgba(15, 39, 71, 0.28);
+}
+
+.card {
+  @apply rounded-[1.5rem] border p-5 transition-all duration-500;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 251, 255, 0.84));
+  border-color: rgba(62, 137, 239, 0.18);
+  box-shadow: 0 20px 46px -34px rgba(15, 39, 71, 0.25);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 60px -32px rgba(31, 115, 221, 0.42);
+}
+
+.btn-primary {
+  @apply rounded-md px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5;
+  background: linear-gradient(135deg, #1f73dd, #104ca3);
+  box-shadow: 0 18px 30px -18px rgba(31, 115, 221, 0.8);
+}
+
+.btn-secondary {
+  @apply rounded-md border px-4 py-2 text-sm font-medium text-black transition-all duration-300;
+  border-color: rgba(31, 115, 221, 0.18);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+  background: rgba(31, 115, 221, 0.08);
+  border-color: rgba(31, 115, 221, 0.32);
+}
+
+.input {
+  @apply w-full rounded-xl border bg-white/90 px-3 py-2 text-sm text-black outline-none ring-brand-500 focus:ring-2;
+  border-color: rgba(31, 115, 221, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.nageco-dots {
+  width: 120px;
+  height: 72px;
+  background-image: radial-gradient(currentColor 1.5px, transparent 1.5px);
+  background-size: 12px 12px;
+}
+
+.nageco-top-accent {
+  @apply pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-700 via-brand-500 to-brand-700;
+}
+
+.nageco-overline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 115, 221, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.55rem 0.95rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(15, 39, 71, 0.74);
+  backdrop-filter: blur(10px);
+}
+
+.nageco-overline::before {
+  content: "";
+  height: 0.55rem;
+  width: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1f73dd, #61a2ff);
+  box-shadow: 0 0 0 0.28rem rgba(31, 115, 221, 0.12);
+}
+
+.nageco-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 39, 71, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.7rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(8, 17, 31, 0.74);
+  box-shadow: 0 16px 30px -24px rgba(15, 39, 71, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.nageco-chip::before {
+  content: "";
+  height: 0.45rem;
+  width: 0.45rem;
+  border-radius: 999px;
+  background: #1f73dd;
+}
+
+.nageco-stat-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(5, 150, 105, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 253, 245, 0.82));
+  padding: 1.1rem 1rem;
+  box-shadow: 0 20px 40px -30px rgba(5, 150, 105, 0.18);
+  color: #047857;
+}
+
+.nageco-stat-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -18% -55% auto;
+  height: 110px;
+  width: 110px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 72%);
+}
+
+.nageco-global-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(7, 17, 33, 0.72), rgba(7, 17, 33, 0.78)),
+    radial-gradient(circle at 20% 20%, rgba(31, 115, 221, 0.35), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(16, 76, 163, 0.26), transparent 40%);
+  backdrop-filter: blur(6px);
+}
+
+.nageco-global-loader--instant {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.16s ease;
+}
+
+.nageco-global-loader--instant.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nageco-global-loader__panel {
+  width: min(560px, calc(100vw - 2rem));
+  border-radius: 1.4rem;
+  border: 1px solid rgba(167, 206, 255, 0.42);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 249, 255, 0.9));
+  box-shadow: 0 30px 80px -42px rgba(0, 0, 0, 0.65);
+  padding: 1.15rem 1.2rem 1.35rem;
+}
+
+.nageco-global-loader__logo {
+  display: block;
+  width: min(260px, 62vw);
+  height: auto;
+  margin: 0 auto 0.9rem;
+  animation: nagecoLoaderLogoPulse 1.05s ease-in-out infinite;
+}
+
+.nageco-global-loader__bar {
+  position: relative;
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(31, 115, 221, 0.15), rgba(31, 115, 221, 0.12));
+}
+
+.nageco-global-loader__bar-fill {
+  display: block;
+  width: 52%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0f56bb, #1f73dd, #4da0ff);
+  box-shadow: 0 0 18px rgba(31, 115, 221, 0.55);
+  animation: nagecoLoaderBar 0.72s ease-out infinite;
+}
+
+/* =========================================
+   NAGECO NOMAD 3D SEISMIC RIG
+========================================= */
+
+.nageco-rig3d {
+  position: relative;
+  width: min(360px, 26vw);
+  min-width: 220px;
+  height: auto;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  will-change: transform;
+  animation: nagecoRigPatrol 16s linear infinite;
+}
+
+.nageco-hero-rig {
+  --nageco-hero-rig-cycle: 80s;
+  --nageco-hero-rig-size: clamp(10.8rem, 13vw, 12.4rem);
+  position: absolute;
+  inset-inline: clamp(1rem, 2vw, 1.5rem);
+  top: 0;
+  height: clamp(6.8rem, 8vw, 8.3rem);
+  transform: translateY(-60%);
+  pointer-events: none;
+  z-index: 25;
+}
+
+.nageco-hero-rig__line {
+  display: none;
+}
+
+.nageco-hero-rig__runner {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--nageco-hero-rig-size);
+  transform: translateY(-56%);
+  animation: nagecoHeroRigRail var(--nageco-hero-rig-cycle) linear infinite;
+  will-change: left, transform;
+}
+
+.nageco-hero-rig .nageco-rig3d {
+  width: var(--nageco-hero-rig-size);
+  min-width: 0;
+  animation: none;
+}
+
+.nageco-hero-rig .nageco-rig3d__interactive {
+  animation: nagecoHeroRigImpactBounce var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__vehicle-svg {
+  animation: nagecoHeroRigImpactShake var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__operation-unit {
+  animation: nagecoHeroRigOperationPulse var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__operation-plate {
+  opacity: 1;
+  animation: nagecoHeroRigPlateHit var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave {
+  stroke: rgba(239, 68, 68, 0.96);
+  filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.42));
+  stroke-dasharray: 18 12;
+  transform-origin: center top;
+  animation: nagecoHeroRigWavePulse var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--2 {
+  animation-delay: 0.6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--3 {
+  animation-delay: 1.2s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--4 {
+  animation-delay: 1.8s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--5 {
+  animation-delay: 2.4s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--6 {
+  animation-delay: 3s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--7 {
+  animation-delay: 3.6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--8 {
+  animation-delay: 4.2s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--9 {
+  animation-delay: 4.8s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--10 {
+  animation-delay: 5.4s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--11 {
+  animation-delay: 6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--12 {
+  animation-delay: 6.6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--13 {
+  animation-delay: 7.2s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--14 {
+  animation-delay: 7.8s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--15 {
+  animation-delay: 8.4s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--16 {
+  animation-delay: 9s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--17 {
+  animation-delay: 9.6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--18 {
+  animation-delay: 10.2s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--19 {
+  animation-delay: 10.8s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--20 {
+  animation-delay: 11.4s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--8 {
+  animation-delay: 4.2s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--9 {
+  animation-delay: 4.8s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--10 {
+  animation-delay: 5.4s;
+}
+
+.nageco-hero-rig .nageco-rig3d__wave--11 {
+  animation-delay: 6s;
+}
+
+.nageco-hero-rig .nageco-rig3d__ground-wave {
+  stroke: rgba(220, 38, 38, 0.84);
+  transform-origin: center top;
+  animation: nagecoHeroRigGroundWave var(--nageco-hero-rig-cycle) linear infinite;
+}
+
+.nageco-hero-rig .nageco-rig3d__ground-wave--2 {
+  animation-delay: 0.45s;
+}
+
+.nageco-hero-rig .nageco-rig3d__ground-wave--3 {
+  animation-delay: 0.9s;
+}
+
+.nageco-hero-rig .nageco-rig3d__ground-wave--4 {
+  animation-delay: 1.35s;
+}
+
+.nageco-rig3d__track {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.nageco-rig3d__interactive {
+  position: relative;
+  width: 100%;
+  height: auto;
+  transform-style: preserve-3d;
+  pointer-events: auto;
+  will-change: transform;
+  filter: drop-shadow(0 18px 30px rgba(15, 39, 71, 0.18));
+  animation: nagecoRigBodyBounce 1.6s ease-in-out infinite;
+  transform:
+    perspective(1400px)
+    translateY(var(--nageco-rig-lift, 0px))
+    rotateX(var(--nageco-rig-rotate-x, 0deg))
+    rotateY(var(--nageco-rig-rotate-y, 0deg));
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.nageco-rig3d:hover .nageco-rig3d__interactive {
+  filter:
+    drop-shadow(0 22px 36px rgba(255, 255, 255, 0.22))
+    drop-shadow(0 28px 42px rgba(15, 39, 71, 0.22));
+}
+
+.nageco-rig3d__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.nageco-rig3d__vehicle-svg {
+  transform-origin: 50% 72%;
+  animation: nagecoRigShake 0.18s ease-in-out infinite alternate;
+}
+
+.nageco-rig3d__wheel-group {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.nageco-rig3d__wheel-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nagecoWheelSpin 1.15s linear infinite;
+}
+
+.nageco-rig3d:hover .nageco-rig3d__wheel-spin {
+  animation-duration: 0.8s;
+}
+
+.nageco-rig3d__wheel-hub {
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.4));
+  animation: nagecoWheelHubPulse 1.1s linear infinite;
+}
+
+.nageco-rig3d__operation-unit {
+  animation: nagecoOperationPulse 1.1s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.nageco-rig3d__beacon,
+.nageco-rig3d__beacon-glow,
+.nageco-rig3d__front-lamp,
+.nageco-rig3d__front-lamp-glow,
+.nageco-rig3d__front-lamp-beam {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.nageco-rig3d__beacon {
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.8));
+  animation: nagecoBeaconBlink 0.8s ease-in-out infinite;
+}
+
+.nageco-rig3d__beacon-glow {
+  opacity: 0.32;
+  filter: blur(6px);
+  animation: nagecoBeaconGlow 0.8s ease-in-out infinite;
+}
+
+.nageco-rig3d__front-lamp {
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.98));
+  animation: nagecoFrontLampBlink 0.9s ease-in-out infinite;
+}
+
+.nageco-rig3d__front-lamp-glow {
+  opacity: 0.34;
+  filter: blur(9px);
+  animation: nagecoFrontLampGlow 0.9s ease-in-out infinite;
+}
+
+.nageco-rig3d__front-lamp-beam {
+  opacity: 0.18;
+  filter: blur(4px);
+  animation: nagecoFrontLampBeam 0.9s ease-in-out infinite;
+}
+
+.nageco-rig3d__operation-plate {
+  transform-box: fill-box;
+  transform-origin: center top;
+  animation: nagecoPlateHit 0.9s linear infinite;
+}
+
+.nageco-rig3d__wave {
+  transform-box: fill-box;
+  transform-origin: center top;
+  stroke-linecap: round;
+  stroke-dasharray: 11 9;
+  opacity: 0;
+  animation: nagecoWavePulse 0.9s ease-out infinite;
+}
+
+.nageco-rig3d__operation-unit .nageco-rig3d__wave {
+  animation-delay: 0s;
+}
+
+.nageco-rig3d__wave--2 {
+  animation-delay: 0.28s;
+}
+
+.nageco-rig3d__wave--3 {
+  animation-delay: 0.56s;
+}
+
+.nageco-rig3d__wave--4 {
+  animation-delay: 0.84s;
+}
+
+.nageco-rig3d__wave--5 {
+  animation-delay: 1.12s;
+}
+
+.nageco-rig3d__wave--6 {
+  animation-delay: 1.4s;
+}
+
+.nageco-rig3d__wave--7 {
+  animation-delay: 1.68s;
+}
+
+.nageco-rig3d__wave--8 {
+  animation-delay: 1.96s;
+}
+
+.nageco-rig3d__wave--9 {
+  animation-delay: 2.24s;
+}
+
+.nageco-rig3d__wave--10 {
+  animation-delay: 2.52s;
+}
+
+.nageco-rig3d__wave--11 {
+  animation-delay: 2.8s;
+}
+
+.nageco-rig3d__wave--12 {
+  animation-delay: 3.08s;
+}
+
+.nageco-rig3d__wave--13 {
+  animation-delay: 3.36s;
+}
+
+.nageco-rig3d__wave--14 {
+  animation-delay: 3.64s;
+}
+
+.nageco-rig3d__wave--15 {
+  animation-delay: 3.92s;
+}
+
+.nageco-rig3d__wave--16 {
+  animation-delay: 4.2s;
+}
+
+.nageco-rig3d__wave--17 {
+  animation-delay: 4.48s;
+}
+
+.nageco-rig3d__wave--18 {
+  animation-delay: 4.76s;
+}
+
+.nageco-rig3d__wave--19 {
+  animation-delay: 5.04s;
+}
+
+.nageco-rig3d__wave--20 {
+  animation-delay: 5.32s;
+}
+
+.nageco-rig3d__wave--8 {
+  animation-delay: 1.96s;
+}
+
+.nageco-rig3d__wave--9 {
+  animation-delay: 2.24s;
+}
+
+.nageco-rig3d__wave--10 {
+  animation-delay: 2.52s;
+}
+
+.nageco-rig3d__wave--11 {
+  animation-delay: 2.8s;
+}
+
+.nageco-rig3d__ground-waves {
+  display: none;
+}
+
+.nageco-rig3d__ground-wave {
+  fill: none;
+  stroke: rgba(88, 179, 255, 0.72);
+  stroke-width: 2.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.nageco-rig3d__ground-wave--1 {
+  animation: nagecoGroundWave 2.4s ease-out infinite;
+}
+
+.nageco-rig3d__ground-wave--2 {
+  animation: nagecoGroundWave 2.4s ease-out infinite 0.35s;
+}
+
+.nageco-rig3d__ground-wave--3 {
+  animation: nagecoGroundWave 2.4s ease-out infinite 0.7s;
+}
+
+.nageco-rig3d__ground-wave--4 {
+  animation: nagecoGroundWave 2.4s ease-out infinite 1.05s;
+}
+
+/* Legacy rig classes kept for compatibility */
+
+.nageco-rig3d__shadow {
+  position: absolute;
+  inset: auto 4% 0 10%;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(8, 17, 31, 0.28), rgba(8, 17, 31, 0.08) 52%, transparent 76%);
+  filter: blur(10px);
+}
+
+.nageco-rig3d__vehicle {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.nageco-rig3d__cab {
+  position: absolute;
+  left: 0.8rem;
+  bottom: 4.7rem;
+  width: 11rem;
+  height: 8.2rem;
+  border: 2px solid rgba(193, 215, 241, 0.95);
+  border-radius: 1.5rem 1.35rem 1.1rem 1.25rem;
+  background: linear-gradient(155deg, #f9fcff 0%, #ebf4fe 45%, #d7e5f2 100%);
+  box-shadow: inset -24px -14px 24px rgba(99, 128, 160, 0.18), inset 8px 10px 18px rgba(255, 255, 255, 0.95);
+  transform: perspective(900px) rotateY(-26deg) rotateX(6deg) skewY(-5deg);
+  transform-style: preserve-3d;
+}
+
+.nageco-rig3d__roof {
+  position: absolute;
+  left: 0.4rem;
+  right: 0.6rem;
+  top: -0.7rem;
+  height: 1.2rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, #fefefe, #d7e5f5);
+  box-shadow: 0 10px 16px rgba(15, 39, 71, 0.12);
+}
+
+.nageco-rig3d__visor {
+  position: absolute;
+  left: 0.8rem;
+  right: 1rem;
+  top: 0.35rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d3c102, #f0da2b, #ccb700);
+}
+
+.nageco-rig3d__window {
+  position: absolute;
+  border-radius: 1rem;
+  border: 2px solid rgba(28, 41, 58, 0.9);
+  background: linear-gradient(145deg, rgba(209, 223, 237, 0.96), rgba(122, 145, 168, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset -12px -10px 18px rgba(17, 32, 49, 0.18);
+}
+
+.nageco-rig3d__window--front {
+  left: 0.9rem;
+  top: 1.25rem;
+  width: 5.9rem;
+  height: 4rem;
+  transform: skewY(-3deg);
+}
+
+.nageco-rig3d__window--side {
+  right: 1rem;
+  top: 1.15rem;
+  width: 3rem;
+  height: 4.7rem;
+  transform: skewY(-8deg);
+}
+
+.nageco-rig3d__stripe {
+  position: absolute;
+  left: 0.2rem;
+  right: 0.2rem;
+  top: 1rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d6c305, #eddc2f, #c9b500);
+}
+
+.nageco-rig3d__badge {
+  position: absolute;
+  left: 1.55rem;
+  bottom: 0.9rem;
+  display: grid;
+  gap: 0.08rem;
+  font-size: 0.56rem;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #233243;
+}
+
+.nageco-rig3d__hse {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  height: 1rem;
+  padding: 0 0.28rem;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 116, 144, 0.16);
+  background: linear-gradient(180deg, #dcfce7, #bbf7d0);
+  font-size: 0.42rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #166534;
+  box-shadow: 0 8px 14px rgba(5, 150, 105, 0.12);
+}
+
+.nageco-rig3d__hse--cab {
+  right: 0.7rem;
+  bottom: 0.85rem;
+}
+
+.nageco-rig3d__hse--deck {
+  left: 4.9rem;
+  top: 1.25rem;
+}
+
+.nageco-rig3d__chevrons {
+  position: absolute;
+  left: 0.2rem;
+  bottom: 0.55rem;
+  width: 2rem;
+  height: 0.7rem;
+  border-radius: 0.2rem;
+  background:
+    linear-gradient(135deg, transparent 0 20%, #b9ff00 20% 32%, transparent 32% 44%, #b9ff00 44% 56%, transparent 56% 68%, #b9ff00 68% 80%, transparent 80%),
+    #1b2027;
+  box-shadow: 0 4px 10px rgba(8, 17, 31, 0.2);
+}
+
+.nageco-rig3d__light {
+  position: absolute;
+  top: -0.25rem;
+  width: 1.1rem;
+  height: 0.55rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(96, 114, 138, 0.85);
+  background: linear-gradient(180deg, #c6d2de, #8ea2b5);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.nageco-rig3d__light--left {
+  left: 1.1rem;
+}
+
+.nageco-rig3d__light--right {
+  right: 2rem;
+}
+
+.nageco-rig3d__bumper {
+  position: absolute;
+  left: -0.2rem;
+  right: 2.2rem;
+  bottom: -0.8rem;
+  height: 1.5rem;
+  border-radius: 0.4rem 0.4rem 0.9rem 0.9rem;
+  background: linear-gradient(180deg, #fefefe, #dde9f6);
+  box-shadow: inset 0 -8px 12px rgba(143, 166, 191, 0.25);
+}
+
+.nageco-rig3d__step {
+  position: absolute;
+  left: 1.7rem;
+  bottom: -1.45rem;
+  width: 2rem;
+  height: 1.1rem;
+  border-radius: 0.25rem 0.25rem 0.55rem 0.55rem;
+  background: linear-gradient(180deg, #eff6fd, #d2e1ef);
+  transform: skewX(-18deg);
+}
+
+.nageco-rig3d__body {
+  position: absolute;
+  left: 9rem;
+  right: 0.2rem;
+  bottom: 4.75rem;
+  height: 6.1rem;
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateY(-20deg) skewX(-12deg);
+}
+
+.nageco-rig3d__deck {
+  position: absolute;
+  inset: 1.75rem 0 0;
+  border-radius: 0.9rem 1rem 0.8rem 0.8rem;
+  background: linear-gradient(180deg, #eff6fc, #d8e5f1 74%, #c5d5e4 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset -12px -12px 18px rgba(85, 116, 147, 0.2);
+}
+
+.nageco-rig3d__engine,
+.nageco-rig3d__pipe,
+.nageco-rig3d__vibrator-unit {
+  position: absolute;
+}
+
+.nageco-rig3d__engine {
+  left: 0.6rem;
+  top: 1rem;
+  width: 2.8rem;
+  height: 1.45rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(180deg, #f7fbfd, #d7e4ef);
+  border: 1px solid rgba(191, 210, 229, 0.95);
+}
+
+.nageco-rig3d__tank,
+.nageco-rig3d__tower,
+.nageco-rig3d__box {
+  position: absolute;
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #f8fbfe, #dae6f2);
+  border: 1px solid rgba(191, 210, 229, 0.95);
+}
+
+.nageco-rig3d__tank {
+  left: 2rem;
+  bottom: 2.1rem;
+  width: 2.6rem;
+  height: 2.7rem;
+}
+
+.nageco-rig3d__tank--rear {
+  left: 8.3rem;
+  bottom: 2.05rem;
+  width: 1.8rem;
+  height: 2.1rem;
+}
+
+.nageco-rig3d__tower {
+  left: 6.6rem;
+  bottom: 2.3rem;
+  width: 1rem;
+  height: 3.7rem;
+}
+
+.nageco-rig3d__tower::after {
+  content: "";
+  position: absolute;
+  left: 0.18rem;
+  right: 0.18rem;
+  top: 0.65rem;
+  height: 1.6rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(180deg, #ccb900, #f0d62a, #baa800);
+}
+
+.nageco-rig3d__box {
+  right: 1rem;
+  bottom: 2.2rem;
+  width: 3rem;
+  height: 2.5rem;
+  background: linear-gradient(180deg, #1f2733, #090c10);
+  border-color: rgba(57, 67, 79, 0.9);
+}
+
+.nageco-rig3d__pipe {
+  height: 0.28rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5a6672, #26313c);
+}
+
+.nageco-rig3d__pipe--top {
+  left: 6.8rem;
+  right: 2rem;
+  top: 0.95rem;
+}
+
+.nageco-rig3d__pipe--mid {
+  left: 7.1rem;
+  right: 2.5rem;
+  top: 1.65rem;
+}
+
+.nageco-rig3d__vibrator-unit {
+  right: 2.3rem;
+  bottom: 2.1rem;
+  width: 1.55rem;
+  height: 2rem;
+  border-radius: 0.35rem;
+  background: linear-gradient(180deg, #fdfefe, #d9e6f0);
+  border: 1px solid rgba(191, 210, 229, 0.95);
+  box-shadow: inset -5px -6px 10px rgba(89, 116, 146, 0.16);
+}
+
+.nageco-rig3d__vibrator-unit::after {
+  content: "";
+  position: absolute;
+  left: 0.25rem;
+  right: 0.25rem;
+  bottom: -0.35rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: #10151b;
+}
+
+.nageco-rig3d__rail {
+  position: absolute;
+  top: 0.15rem;
+  width: 0.22rem;
+  height: 4.4rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fdfefe, #dce8f3);
+  box-shadow: 0.95rem 0 0 #edf4fa, 1.9rem 0 0 #edf4fa;
+}
+
+.nageco-rig3d__rail--front {
+  left: 0.8rem;
+}
+
+.nageco-rig3d__rail--mid {
+  left: 4.8rem;
+}
+
+.nageco-rig3d__rail--rear {
+  right: 2.8rem;
+}
+
+.nageco-rig3d__support {
+  position: absolute;
+  bottom: -1.4rem;
+  width: 0.55rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  background: linear-gradient(180deg, #dbe7f3, #b8c7d6);
+}
+
+.nageco-rig3d__support--one {
+  left: 2.1rem;
+}
+
+.nageco-rig3d__support--two {
+  left: 8rem;
+}
+
+.nageco-rig3d__support--three {
+  right: 3rem;
+}
+
+.nageco-rig3d__wheel {
+  position: absolute;
+  bottom: 0.3rem;
+  width: 4.9rem;
+  height: 4.9rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #303843 0%, #131a22 48%, #06090d 74%, #040608 100%);
+  border: 0.42rem solid #161d25;
+  box-shadow: inset 0 0 0 0.7rem rgba(52, 63, 75, 0.5), inset 0 0 0 1.4rem rgba(6, 10, 15, 0.9);
+  animation: nagecoWheelSpin 2.4s linear infinite;
+}
+
+.nageco-rig3d__wheel::before {
+  content: "";
+  position: absolute;
+  inset: 0.58rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, #ffffff 0%, #eef4fb 48%, #c9d7e5 72%, #8ca0b4 100%);
+  box-shadow: inset 0 0 0 0.22rem rgba(71, 87, 103, 0.24);
+}
+
+.nageco-rig3d__wheel::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 999px;
+  border: 0.2rem dashed rgba(40, 49, 59, 0.9);
+}
+
+.nageco-rig3d__wheel--front {
+  left: 1.5rem;
+}
+
+.nageco-rig3d__wheel--middle {
+  left: 13.8rem;
+}
+
+.nageco-rig3d__wheel--rear {
+  right: 0.5rem;
+}
+
+.nageco-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid rgba(15, 39, 71, 0.09);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 251, 255, 0.82));
+  box-shadow: 0 30px 70px -42px rgba(15, 39, 71, 0.24);
+}
+
+.nageco-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(31, 115, 221, 0.4), transparent);
+}
+
+.nageco-gridline {
+  background-image:
+    linear-gradient(rgba(15, 39, 71, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 39, 71, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at center, black, transparent 88%);
+}
+
+.nageco-dark-panel {
+  background:
+    radial-gradient(circle at top right, rgba(96, 165, 250, 0.2), transparent 30%),
+    linear-gradient(145deg, rgba(8, 17, 31, 0.95), rgba(15, 39, 71, 0.94));
+  color: white;
+}
+
+.nageco-process-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(31, 115, 221, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.nageco-process-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #1f73dd, #7db1ff);
+}
+
+.nageco-cta-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  border: 1px solid rgba(31, 115, 221, 0.16);
+  background:
+    radial-gradient(circle at top right, rgba(96, 165, 250, 0.2), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(232, 241, 255, 0.82));
+  box-shadow: 0 34px 80px -44px rgba(15, 39, 71, 0.3);
+}
+
+.nageco-nav-link {
+  position: relative;
+  display: inline-block;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.nageco-nav-link:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.nageco-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 100%;
+  border-radius: 999px;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 260ms ease;
+}
+
+.nageco-nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nageco-fade-up {
+  animation: nagecoFadeUp 0.85s ease-out both;
+}
+
+.nageco-float {
+  animation: nagecoFloat 4s ease-in-out infinite;
+}
+
+.nageco-fade-left {
+  animation: nagecoFadeLeft 0.95s ease-out both;
+}
+
+.nageco-fade-right {
+  animation: nagecoFadeRight 0.95s ease-out both;
+}
+
+.nageco-glow {
+  animation: nagecoGlow 2.8s ease-in-out infinite;
+}
+
+.nageco-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.nageco-shine::before {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -80%;
+  width: 50%;
+  height: 320%;
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.35), transparent 80%);
+  transform: rotate(18deg);
+  animation: nagecoShine 4.2s linear infinite;
+}
+
+.nageco-carousel-shimmer {
+  background: linear-gradient(115deg, transparent 10%, rgba(255, 255, 255, 0.26) 50%, transparent 90%);
+  mix-blend-mode: screen;
+  background-size: 220% 100%;
+  animation: nagecoImageSweep 6s ease-in-out infinite;
+}
+
+.nageco-news-title {
+  background: linear-gradient(100deg, #0f2747 0%, #1f73dd 55%, #3e89ef 100%);
+  background-size: 210% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nagecoTitleShift 6s ease-in-out infinite;
+}
+
+.nageco-news-subtitle {
+  animation: nagecoFadeUpSoft 0.9s ease-out both;
+  animation-delay: 120ms;
+}
+
+.nageco-news-item-title {
+  animation: nagecoFadeLeftSoft 0.65s ease-out both;
+}
+
+.nageco-news-item-text {
+  animation: nagecoFadeUpSoft 0.8s ease-out both;
+  animation-delay: 80ms;
+}
+
+.nageco-news-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.12);
+  animation: nagecoIconPulse 2.3s ease-in-out infinite;
+}
+
+.nageco-news-icon svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.nageco-news-icon svg circle,
+.nageco-news-icon svg rect,
+.nageco-news-icon svg path {
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.nageco-news-icon--hero {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(220, 38, 38, 0.14);
+  box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35);
+  animation: nagecoIconPulse 2.3s ease-in-out infinite, nagecoIconRing 2.3s ease-out infinite;
+}
+
+.nageco-news-icon--hero svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.nageco-news-ticker {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(92deg, #fff 0%, #fff5f5 42%, #ffecec 100%);
+  box-shadow:
+    0 18px 45px -32px rgba(127, 29, 29, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  padding: 0.38rem 0.65rem 0.38rem 0.38rem;
+  overflow: hidden;
+}
+
+.nageco-news-ticker-wrap {
+  position: relative;
+  margin: 0 auto 1rem;
+  width: 100%;
+  left: 0;
+  z-index: 2;
+}
+
+.nageco-news-ticker-wrap .nageco-news-ticker {
+  min-height: 2.7rem;
+}
+
+.nageco-news-ticker__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  padding: 0 0.95rem;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow:
+    0 10px 22px -14px rgba(220, 38, 38, 0.9),
+    inset 0 -2px 0 rgba(127, 29, 29, 0.35);
+}
+
+.nageco-news-ticker__label::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.25);
+  animation: nagecoTickerLive 1.5s ease-in-out infinite;
+}
+
+.nageco-news-ticker__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.nageco-news-ticker__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: nagecoNewsTicker 18s linear infinite;
+}
+
+.nageco-news-ticker__group {
+  display: flex;
+  align-items: center;
+}
+
+.nageco-news-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #7f1d1d;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  margin-right: 1.35rem;
+  text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: color 240ms ease, text-shadow 240ms ease;
+}
+
+.nageco-news-ticker__item:hover {
+  color: #991b1b;
+  text-shadow: 0 0 16px rgba(220, 38, 38, 0.2);
+}
+
+.nageco-news-ticker__item::before {
+  content: "";
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #fb7185, #ef4444 72%);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+  animation: nagecoTickerDotPulse 2.1s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .nageco-news-ticker-wrap {
+    width: 100%;
+    left: 0;
+    margin-bottom: 0.85rem;
+  }
+}
+
+@keyframes nagecoFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nagecoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes nagecoFadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nagecoFadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nagecoGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(31, 115, 221, 0);
+  }
+  50% {
+    box-shadow: 0 0 26px rgba(31, 115, 221, 0.35);
+  }
+}
+
+@keyframes nagecoShine {
+  from {
+    left: -80%;
+  }
+  to {
+    left: 140%;
+  }
+}
+
+@keyframes nagecoHeroPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+@keyframes nagecoHeroSweep {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes nagecoImageSweep {
+  0%,
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.32;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.58;
+  }
+}
+
+@keyframes nagecoFadeUpSoft {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nagecoFadeLeftSoft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nagecoTitleShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes nagecoIconPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes nagecoIconRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+@keyframes nagecoNewsTicker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes nagecoTickerDotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes nagecoTickerLive {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes nagecoHeroBgShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes nagecoBackgroundA {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes nagecoBackgroundB {
+  0%,
+  45% {
+    opacity: 0;
+  }
+  50%,
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes nagecoLoaderBar {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes nagecoLoaderLogoPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.98;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes nagecoRigPatrol {
+  0% {
+    transform: translateX(0) scaleX(1);
+  }
+  38% {
+    transform: translateX(clamp(12rem, 28vw, 26rem)) scaleX(1);
+  }
+  43% {
+    transform: translateX(clamp(12rem, 28vw, 26rem)) scaleX(0.9);
+  }
+  50% {
+    transform: translateX(clamp(12rem, 28vw, 26rem)) scaleX(-1);
+  }
+  88% {
+    transform: translateX(0) scaleX(-1);
+  }
+  94% {
+    transform: translateX(0) scaleX(-0.9);
+  }
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+@keyframes nagecoHeroRigRail {
+  0% {
+    left: 0;
+    transform: translateY(-56%) scaleX(1);
+  }
+  22% {
+    left: 56%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  30% {
+    left: 56%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  31% {
+    left: 56%;
+    transform: translateY(-42%) scaleX(1);
+  }
+  34% {
+    left: 56%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  42% {
+    left: 72%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  50% {
+    left: 72%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  51% {
+    left: 72%;
+    transform: translateY(-42%) scaleX(1);
+  }
+  54% {
+    left: 72%;
+    transform: translateY(-56%) scaleX(1);
+  }
+  62% {
+    left: calc(100% - var(--nageco-hero-rig-size));
+    transform: translateY(-56%) scaleX(1);
+  }
+  70% {
+    left: calc(100% - var(--nageco-hero-rig-size));
+    transform: translateY(-56%) scaleX(1);
+  }
+  71% {
+    left: calc(100% - var(--nageco-hero-rig-size));
+    transform: translateY(-42%) scaleX(1);
+  }
+  74% {
+    left: calc(100% - var(--nageco-hero-rig-size));
+    transform: translateY(-56%) scaleX(-1);
+  }
+  86% {
+    left: 0;
+    transform: translateY(-56%) scaleX(-1);
+  }
+  100% {
+    left: 0;
+    transform: translateY(-56%) scaleX(1);
+  }
+}
+
+@keyframes nagecoHeroRigImpactBounce {
+  0%,
+  30%,
+  34%,
+  50%,
+  54%,
+  70%,
+  74%,
+  100% {
+    margin-top: 0px;
+  }
+  31%,
+  51%,
+  71% {
+    margin-top: 7px;
+  }
+}
+
+@keyframes nagecoHeroRigImpactShake {
+  0%,
+  30%,
+  34%,
+  50%,
+  54%,
+  70%,
+  74%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  31%,
+  51%,
+  71% {
+    transform: translateY(4.2px) rotate(-1deg);
+  }
+}
+
+@keyframes nagecoHeroRigOperationPulse {
+  0%,
+  30%,
+  34%,
+  50%,
+  54%,
+  70%,
+  74%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  31%,
+  51%,
+  71% {
+    transform: translateY(2px) scale(1.06);
+  }
+}
+
+@keyframes nagecoHeroRigPlateHit {
+  0%,
+  30%,
+  34%,
+  50%,
+  54%,
+  70%,
+  74%,
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  31%,
+  51%,
+  71% {
+    opacity: 0;
+    transform: scaleY(0.08);
+  }
+}
+
+@keyframes nagecoHeroRigWavePulse {
+  0%,
+  29%,
+  49%,
+  69%,
+  100% {
+    opacity: 0;
+    transform: translateY(10px) scaleX(1.02) scaleY(0.55) perspective(440px) rotateX(68deg);
+  }
+  31%,
+  51%,
+  71% {
+    opacity: 0.96;
+    transform: translateY(88px) scaleX(1.12) scaleY(10.5) perspective(440px) rotateX(81deg);
+  }
+  34%,
+  54%,
+  74% {
+    opacity: 0;
+    transform: translateY(340px) scaleX(1.22) scaleY(28) perspective(440px) rotateX(86deg);
+  }
+}
+
+@keyframes nagecoHeroRigGroundWave {
+  0%,
+  28%,
+  48%,
+  68%,
+  100% {
+    opacity: 0;
+    transform: translateY(14px) scaleX(0.45) scaleY(1.1) skewX(-14deg);
+  }
+  31%,
+  51%,
+  71% {
+    opacity: 0.92;
+    transform: translateY(78px) scaleX(0.72) scaleY(5.4) skewX(-14deg);
+  }
+  36%,
+  56%,
+  76% {
+    opacity: 0;
+    transform: translateY(190px) scaleX(1.15) scaleY(13) skewX(-14deg);
+  }
+}
+
+@keyframes nagecoRigBodyBounce {
+  0%,
+  100% {
+    margin-top: 0px;
+  }
+  50% {
+    margin-top: 6px;
+  }
+}
+
+@keyframes nagecoRigShake {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(3.6px) rotate(-0.68deg);
+  }
+}
+
+@keyframes nagecoWheelSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes nagecoWheelHubPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+@keyframes nagecoOperationPulse {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(1.03);
+  }
+}
+
+@keyframes nagecoBeaconBlink {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes nagecoBeaconGlow {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(0.78);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes nagecoFrontLampBlink {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes nagecoFrontLampGlow {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.76);
+  }
+  50% {
+    opacity: 0.62;
+    transform: scale(1.7);
+  }
+}
+
+@keyframes nagecoFrontLampBeam {
+  0%,
+  100% {
+    opacity: 0.08;
+    transform: scaleX(0.86);
+  }
+  50% {
+    opacity: 0.42;
+    transform: scaleX(1.08);
+  }
+}
+
+@keyframes nagecoPlateHit {
+  0%,
+  38%,
+  44%,
+  62%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  48% {
+    transform: translateY(-1px) scaleY(1.04);
+  }
+  54% {
+    transform: translateY(4px) scaleY(0.46);
+  }
+}
+
+@keyframes nagecoWavePulse {
+  0%,
+  51% {
+    opacity: 0;
+    transform: translateY(0) scale(0.82);
+  }
+  56% {
+    opacity: 0.98;
+    transform: translateY(2px) scale(0.94);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(22px) scale(1.14);
+  }
+}
+
+@keyframes nagecoGroundWave {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  20% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
+  }
+
+  body::before {
+    opacity: 1;
+  }
+
+  body::after {
+    opacity: 0;
+  }
+
+  .nageco-hero-focus::before,
+  .nageco-hero-focus::after,
+  .nageco-carousel-shimmer,
+  .nageco-news-title,
+  .nageco-news-subtitle,
+  .nageco-news-item-title,
+  .nageco-news-item-text,
+  .nageco-news-icon,
+  .nageco-news-icon--hero,
+  .nageco-news-ticker__track,
+  .nageco-news-ticker__label::before,
+  .nageco-news-ticker__item::before,
+  .nageco-rig3d,
+  .nageco-rig3d__interactive,
+  .nageco-rig3d__vehicle,
+  .nageco-rig3d__wheel,
+  .nageco-rig3d__wheel-spin,
+  .nageco-rig3d__operation-unit,
+  .nageco-rig3d__operation-plate,
+  .nageco-rig3d__beacon,
+  .nageco-rig3d__beacon-glow,
+  .nageco-rig3d__front-lamp,
+  .nageco-rig3d__front-lamp-glow,
+  .nageco-rig3d__front-lamp-beam,
+  .nageco-rig3d__wave,
+  .nageco-rig3d__ground-wave {
+    animation: none;
+  }
+
+  .nageco-hero-focus {
+    animation: none;
+  }
+}
+
+.nageco-main-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: color 220ms ease, background-color 220ms ease, transform 220ms ease;
+}
+
+.nageco-main-link.nageco-main-link--ar {
+  min-height: 2.45rem;
+  padding: 0.55rem 0.72rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.nageco-main-link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  margin: auto;
+  height: 2px;
+  width: calc(100% - 1.5rem);
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #1f73dd, transparent);
+  transform: scaleX(0.35);
+  opacity: 0;
+  transition: transform 240ms ease, opacity 240ms ease;
+}
+
+.nageco-main-link:hover {
+  transform: translateY(-1px);
+  background: rgba(31, 115, 221, 0.08);
+}
+
+.nageco-main-link:hover::after,
+.nageco-main-link[aria-current="page"]::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.nageco-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.nageco-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prose img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.nageco-capabilities-article {
+  color: rgba(51, 65, 85, 0.96);
+}
+
+.nageco-capabilities-article > :first-child {
+  margin-top: 0;
+}
+
+.nageco-capabilities-article p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 2;
+  color: rgba(51, 65, 85, 0.94);
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.nageco-capabilities-article p:first-of-type {
+  margin-top: 0;
+  font-size: 1.14rem;
+  line-height: 1.95;
+  color: rgba(15, 23, 42, 0.92);
+  text-align: justify;
+}
+
+.nageco-capabilities-article p:first-of-type::first-letter {
+  float: left;
+  margin: 0.1rem 0.45rem 0 0;
+  font-family: var(--font-heading), var(--font-body), system-ui, sans-serif;
+  font-size: 3.2rem;
+  line-height: 0.88;
+  font-weight: 800;
+  color: var(--nageco-accent);
+}
+
+.nageco-capabilities-article a {
+  font-weight: 700;
+  color: var(--nageco-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
+.nageco-capabilities-article ul,
+.nageco-capabilities-article ol {
+  margin-top: 1rem;
+  padding-left: 1.35rem;
+}
+
+.nageco-capabilities-article li {
+  margin-top: 0.55rem;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+.nageco-capabilities-article blockquote {
+  margin-top: 1.25rem;
+  border-left: 4px solid rgba(31, 115, 221, 0.42);
+  background: rgba(31, 115, 221, 0.06);
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  color: rgba(15, 23, 42, 0.88);
+  text-align: justify;
+}
+
+.nageco-capabilities-article img {
+  display: inline-block;
+  width: auto;
+  height: 0.9em;
+  vertical-align: -0.08em;
+}
+
+@media (max-width: 768px) {
+  .nageco-overline {
+    letter-spacing: 0.18em;
+  }
+
+  .nageco-chip {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nageco-rig3d {
+    width: min(280px, 62vw);
+    min-width: 180px;
+  }
+
+  .nageco-capabilities-article p:first-of-type::first-letter {
+    font-size: 2.6rem;
+    margin-right: 0.35rem;
+  }
+}

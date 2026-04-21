@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.0.x", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "rhel-openssl-1.0.x", "rhel-openssl-1.1.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("SQLITE_DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PageKey {
+  HOME
+  ABOUT
+  SERVICES
+  HSE
+  CAPABILITIES
+  INDUSTRIES
+  CAREER
+  PARTNER
+  CREW
+  CONTACT
+  NEWS
+  TERMS
+  PRIVACY
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(VIEWER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  posts        Post[]    @relation("PostAuthor")
+  media        Media[]   @relation("MediaUploader")
+  createdPosts Post[]    @relation("PostCreatedBy")
+  updatedPosts Post[]    @relation("PostUpdatedBy")
+  createdProjects Project[] @relation("ProjectCreatedBy")
+  updatedProjects Project[] @relation("ProjectUpdatedBy")
+}
+
+model Post {
+  id             String     @id @default(cuid())
+  title          String
+  titleAr        String?
+  slug           String     @unique
+  excerpt        String
+  excerptAr      String?
+  contentHtml    String
+  contentHtmlAr  String?
+  coverImageUrl  String?
+  status         PostStatus @default(DRAFT)
+  publishedAt    DateTime?
+  tags           String
+  seoTitle       String?
+  seoTitleAr     String?
+  seoDescription String?
+  seoDescriptionAr String?
+  ogImageUrl     String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  authorId       String
+  createdById    String?
+  updatedById    String?
+
+  author    User  @relation("PostAuthor", fields: [authorId], references: [id])
+  createdBy User? @relation("PostCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("PostUpdatedBy", fields: [updatedById], references: [id])
+}
+
+model Project {
+  id            String        @id @default(cuid())
+  title         String
+  titleAr       String?
+  slug          String        @unique
+  summary       String
+  summaryAr     String?
+  challenge     String?
+  challengeAr   String?
+  approach      String?
+  approachAr    String?
+  methods       String
+  methodsAr     String?
+  deliverables  String
+  deliverablesAr String?
+  outcome       String?
+  outcomeAr     String?
+  year          Int?
+  country       String?
+  countryAr     String?
+  industry      String?
+  industryAr    String?
+  mapX          Float?
+  mapY          Float?
+  coverImageUrl String?
+  gallery       String
+  status        ProjectStatus @default(DRAFT)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  createdById   String?
+  updatedById   String?
+
+  createdBy User? @relation("ProjectCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("ProjectUpdatedBy", fields: [updatedById], references: [id])
+}
+
+model PageContent {
+  id             String   @id @default(cuid())
+  key            PageKey  @unique
+  sectionsJson   Json
+  seoTitle       String?
+  seoDescription String?
+  updatedAt      DateTime @updatedAt
+  createdById    String?
+  updatedById    String?
+}
+
+model SiteSettings {
+  id                    String   @id @default("singleton")
+  brandName             String
+  brandNameAr           String?
+  tagline               String
+  taglineAr             String?
+  phones                String
+  emails                String
+  address               String?
+  addressAr             String?
+  whatsapp              String?
+  mapEmbedUrl           String?
+  socialLinksJson       Json
+  defaultSeoTitle       String?
+  defaultSeoTitleAr     String?
+  defaultSeoDescription String?
+  defaultSeoDescriptionAr String?
+  defaultOgImage        String?
+  updatedAt             DateTime @updatedAt
+  createdById           String?
+  updatedById           String?
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  fileName     String
+  url          String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+  uploadedById String
+
+  uploadedBy User @relation("MediaUploader", fields: [uploadedById], references: [id])
+}
