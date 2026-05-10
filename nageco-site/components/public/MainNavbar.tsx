@@ -27,32 +27,11 @@ export function MainNavbar({
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
   const isArabicLocale = locale === "ar";
   const i18n = getI18nMessages(locale);
   const nav = i18n.navbar.navItems;
   const switchToArabicHref = `/api/locale?locale=ar&redirect=${encodeURIComponent(pathname || "/")}`;
   const switchToEnglishHref = `/api/locale?locale=en&redirect=${encodeURIComponent(pathname || "/")}`;
-
-  useEffect(() => {
-    const scrolledEnterThreshold = 132;
-    const scrolledExitThreshold = 18;
-
-    const onScroll = () => {
-      const currentY = window.scrollY;
-      setScrolled((previous) => {
-        if (previous) {
-          return currentY > scrolledExitThreshold;
-        }
-
-        return currentY > scrolledEnterThreshold;
-      });
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -63,13 +42,9 @@ export function MainNavbar({
     <header className="sticky top-0 z-50 pt-1 md:pt-1.5">
       <div className="container-page">
         <div
-          className={`w-full overflow-hidden lg:overflow-visible rounded-[1.8rem] border transition-all duration-300 ${
-            scrolled
-              ? "border-brand-700/12 bg-white/82 shadow-[0_24px_70px_-38px_rgba(15,39,71,0.45)] backdrop-blur-2xl"
-              : "border-white/60 bg-white/72 shadow-[0_22px_60px_-42px_rgba(15,39,71,0.45)] backdrop-blur-xl"
-          }`}
+          className="w-full overflow-hidden lg:overflow-visible rounded-[1.8rem] border border-white/60 bg-white/72 shadow-[0_22px_60px_-42px_rgba(15,39,71,0.45)] backdrop-blur-xl"
         >
-          <div className={`overflow-hidden transition-all duration-300 ${scrolled ? "max-h-0 opacity-0" : "max-h-20 opacity-100"}`}>
+          <div className="overflow-hidden max-h-20 opacity-100">
             <div className="flex flex-col gap-2 bg-[linear-gradient(90deg,#0f2747,#1f73dd)] px-5 py-3 text-white md:flex-row md:items-center md:justify-between md:px-7">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/80 md:flex-1">
                 {i18n.navbar.companyName}
@@ -81,7 +56,7 @@ export function MainNavbar({
                   title={latestBreakingTitle ?? i18n.navbar.latestBreakingActionTitle}
                 >
                   <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/75" />
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-white/45" />
                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
                   </span>
                   <span className="text-[11px] font-extrabold uppercase tracking-[0.16em]">{i18n.navbar.latestBreakingLabel}</span>
@@ -101,7 +76,7 @@ export function MainNavbar({
             </div>
           </div>
 
-          <div className={`flex items-center justify-between gap-4 px-4 transition-all duration-300 md:px-6 ${scrolled ? "py-2.5" : "py-3"}`}>
+          <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-6">
             <BrandLogo compact src="/nageco-logo1.svg" className="w-16 md:w-20" />
 
             <nav className={`hidden items-center rounded-full border border-brand-700/10 bg-white/70 shadow-[0_14px_30px_-24px_rgba(15,39,71,0.4)] backdrop-blur lg:flex ${isArabicLocale ? "gap-0.5 p-1" : "gap-1 p-1.5"}`}>

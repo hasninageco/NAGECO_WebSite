@@ -56,9 +56,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const headerList = await headers();
   const pathname = headerList.get("x-pathname") ?? "";
   const isAdminRoute = pathname.startsWith("/admin");
-  const isUnderConstructionHome = pathname === "/";
   const isMaintenanceLockRoute = pathname.startsWith("/maintenance-login") || pathname.startsWith("/__maintenance-login");
-  const showPublicShell = !isAdminRoute && !isUnderConstructionHome && !isMaintenanceLockRoute;
+  const showPublicShell = !isAdminRoute && !isMaintenanceLockRoute;
   const siteLocale = isAdminRoute ? "en" : await getCurrentSiteLocale();
   const pageDirection = isAdminRoute ? "ltr" : getDirectionForLocale(siteLocale);
   const copy = getI18nMessages(siteLocale).footer;
@@ -132,7 +131,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       >
         {showPublicShell && <InstantRouteLoader />}
         {showPublicShell && <MainNavbar locale={siteLocale} latestBreakingTitle={latestBreakingTitle} latestBreakingSlug={latestBreaking?.slug} />}
-        <main className={`relative z-10 flex-1 ${isAdminRoute ? "bg-white pb-0 pt-0" : isUnderConstructionHome || isMaintenanceLockRoute ? "pb-0 pt-0" : "pb-10 pt-0"}`}>{children}</main>
+        <main className={`relative z-10 flex-1 ${isAdminRoute ? "bg-white pb-0 pt-0" : isMaintenanceLockRoute ? "pb-0 pt-0" : "pb-10 pt-0"}`}>{children}</main>
         {showPublicShell && <footer className="relative mt-6 overflow-hidden border-t border-brand-700/10 bg-white/70 backdrop-blur-xl">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent" />
           <div className={footerGridClassName}>

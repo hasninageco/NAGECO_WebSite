@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { GeoJSON, MapContainer, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
 import Image from "next/image";
+import * as L from "leaflet";
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
-import { divIcon } from "leaflet";
 import type { GeoJsonObject } from "geojson";
+
+let mapInstanceCounter = 0;
 
 type MapPoint = {
   id: string;
@@ -51,30 +52,11 @@ const DEFAULT_LIBYA_BOUNDS: LibyaBounds = {
   maxLat: 33.2
 };
 
-function MapViewportController({ bounds, isFullscreen }: { bounds: LatLngBoundsExpression; isFullscreen: boolean }) {
-  const map = useMap();
-
-  useEffect(() => {
-    map.fitBounds(bounds, { padding: MAP_PADDING });
-    map.setMaxBounds(bounds);
-  }, [map, bounds]);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      map.invalidateSize();
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [map, isFullscreen]);
-
-  return null;
-}
-
 function createProjectPinIcon(label: string, color: string, active: boolean) {
   const size = active ? 34 : 28;
   const ringSize = active ? 46 : 38;
 
-  return divIcon({
+  return L.divIcon({
     className: "",
     iconSize: [ringSize, ringSize],
     iconAnchor: [ringSize / 2, ringSize / 2],
@@ -136,6 +118,9 @@ export function ProjectsOperationsMap({ points }: { points: MapPoint[] }) {
   const [libyaBounds, setLibyaBounds] = useState<LibyaBounds>(DEFAULT_LIBYA_BOUNDS);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const mapFrameRef = useRef<HTMLDivElement | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const overlaysRef = useRef<L.LayerGroup | null>(null);
 
   const activePoint = useMemo(() => points.find((point) => point.id === activeId) ?? points[0] ?? null, [points, activeId]);
 
@@ -225,6 +210,110 @@ export function ProjectsOperationsMap({ points }: { points: MapPoint[] }) {
     return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
   }, []);
 
+  useEffect(() => {
+    const container = mapContainerRef.current;
+    if (!container || mapRef.current) return;
+
+    const map = L.map(container, {
+      zoomControl: false,
+      scrollWheelZoom: true,
+      maxBoundsViscosity: 1
+    });
+
+    mapRef.current = map;
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      attribution: "Tiles © Esri"
+    }).addTo(map);
+
+    return () => {
+      overlaysRef.current?.remove();
+      overlaysRef.current = null;
+      map.remove();
+      mapRef.current = null;
+      container.innerHTML = "";
+      delete (container as HTMLDivElement & { _leaflet_id?: number })._leaflet_id;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const bounds: LatLngBoundsExpression = [
+      [libyaBounds.minLat, libyaBounds.minLon],
+      [libyaBounds.maxLat, libyaBounds.maxLon]
+    ];
+
+    map.fitBounds(bounds, { padding: MAP_PADDING });
+    map.setMaxBounds(bounds);
+  }, [libyaBounds]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    overlaysRef.current?.remove();
+    const overlays = L.layerGroup().addTo(map);
+    overlaysRef.current = overlays;
+
+    if (libyaFeature) {
+      L.geoJSON(libyaFeature as unknown as GeoJsonObject, {
+        style: {
+          color: "#ffffff",
+          weight: 6,
+          opacity: 0.58,
+          fillOpacity: 0
+        }
+      }).addTo(overlays);
+
+      L.geoJSON(libyaFeature as unknown as GeoJsonObject, {
+        style: {
+          color: "#dc2626",
+          weight: 3.2,
+          opacity: 0.98,
+          fillOpacity: 0
+        }
+      }).addTo(overlays);
+    }
+
+    mapPoints.forEach((point) => {
+      const isActive = activeId === point.id;
+      const marker = L.marker(point.position, {
+        icon: createProjectPinIcon(String(point.order), point.color, isActive)
+      });
+
+      marker.on("click", () => setActiveId(point.id));
+      marker.on("mouseover", () => setHoveredId(point.id));
+      marker.on("mouseout", () => setHoveredId(null));
+      marker.bindTooltip(
+        `
+          <div class="w-[180px] overflow-hidden rounded-xl">
+            ${point.imageUrl ? `<div class="relative h-20 w-full"><img src="${point.imageUrl}" alt="${point.title}" style="width:100%;height:100%;object-fit:cover;" /></div>` : `<div class="flex h-20 w-full items-center justify-center bg-slate-100 text-xs font-bold text-slate-500">NO IMAGE</div>`}
+            <div class="space-y-0.5 px-2.5 py-2">
+              <p class="truncate text-[11px] font-bold uppercase tracking-[0.08em] text-red-600">${point.country || "Libya"}</p>
+              <p class="truncate text-xs font-semibold text-slate-900">${point.title}</p>
+            </div>
+          </div>
+        `,
+        { direction: "top", offset: [0, -8], opacity: 1 }
+      );
+
+      marker.addTo(overlays);
+    });
+  }, [mapPoints, activeId, libyaFeature]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const frame = requestAnimationFrame(() => {
+      map.invalidateSize();
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isFullscreen]);
+
   const toggleFullscreen = async () => {
     const frame = mapFrameRef.current;
     if (!frame) return;
@@ -276,75 +365,7 @@ export function ProjectsOperationsMap({ points }: { points: MapPoint[] }) {
             <span className="text-sm leading-none">{isFullscreen ? "⤡" : "⤢"}</span>
             <span>{isFullscreen ? "Exit full screen" : "Full screen"}</span>
           </button>
-          <MapContainer
-            bounds={libyaViewBounds}
-            minZoom={5}
-            maxZoom={10}
-            maxBoundsViscosity={1}
-            scrollWheelZoom
-            className="h-full w-full"
-          >
-            <MapViewportController bounds={libyaViewBounds} isFullscreen={isFullscreen} />
-            <TileLayer
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              attribution="Tiles © Esri"
-            />
-
-            {libyaFeature && (
-              <>
-                <GeoJSON
-                  data={libyaFeature as unknown as GeoJsonObject}
-                  style={{
-                    color: "#ffffff",
-                    weight: 6,
-                    opacity: 0.58,
-                    fillOpacity: 0
-                  }}
-                />
-                <GeoJSON
-                  data={libyaFeature as unknown as GeoJsonObject}
-                  style={{
-                    color: "#dc2626",
-                    weight: 3.2,
-                    opacity: 0.98,
-                    fillOpacity: 0
-                  }}
-                />
-              </>
-            )}
-
-            {mapPoints.map((point) => {
-              const isActive = activeId === point.id;
-              return (
-                <Marker
-                  key={point.id}
-                  position={point.position}
-                  icon={createProjectPinIcon(String(point.order), point.color, isActive)}
-                  eventHandlers={{
-                    click: () => setActiveId(point.id),
-                    mouseover: () => setHoveredId(point.id),
-                    mouseout: () => setHoveredId(null)
-                  }}
-                >
-                  <Tooltip direction="top" offset={[0, -8]} opacity={1} className="!rounded-xl !border !border-slate-200 !bg-white/95 !p-0 !shadow-lg">
-                    <div className="w-[180px] overflow-hidden rounded-xl">
-                      {point.imageUrl ? (
-                        <div className="relative h-20 w-full">
-                          <Image src={point.imageUrl} alt={point.title} fill className="object-cover" sizes="180px" />
-                        </div>
-                      ) : (
-                        <div className="flex h-20 w-full items-center justify-center bg-slate-100 text-xs font-bold text-slate-500">NO IMAGE</div>
-                      )}
-                      <div className="space-y-0.5 px-2.5 py-2">
-                        <p className="truncate text-[11px] font-bold uppercase tracking-[0.08em] text-red-600">{point.country || "Libya"}</p>
-                        <p className="truncate text-xs font-semibold text-slate-900">{point.title}</p>
-                      </div>
-                    </div>
-                  </Tooltip>
-                </Marker>
-              );
-            })}
-          </MapContainer>
+          <div ref={mapContainerRef} className="h-full w-full" />
 
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.18),transparent_50%)]" />
         </div>

@@ -40,12 +40,14 @@ body::after {
 
 body::before {
   background-image: var(--global-bg-1, url("/uploads/1772694098901-f9fb9b18-9bda-4f8d-9b17-f4f219629dcf.jpg"));
-  animation: nagecoBackgroundA 14s ease-in-out infinite;
+  opacity: 1;
+  animation: none;
 }
 
 body::after {
-  background-image: var(--global-bg-2, url("/uploads/1772694103125-1cd73b92-24f6-49dc-8ef4-de20fc44246b.jpg"));
-  animation: nagecoBackgroundB 14s ease-in-out infinite;
+  content: none;
+  background-image: none;
+  animation: none;
 }
 
 body.nageco-admin-shell {

@@ -1,6 +1,6 @@
 import { getPublishedProjects } from "@/lib/public-data";
 import { pickLocalizedText } from "@/lib/localized";
-import { ProjectsOperationsMap } from "@/components/public/ProjectsOperationsMap";
+import { ProjectsOperationsMapClient } from "@/components/public/ProjectsOperationsMapClient";
 import { normalizeMediaUrl } from "@/lib/media-url";
 import { getCurrentSiteLocale } from "@/lib/site-locale";
 
@@ -53,7 +53,7 @@ export default async function ProjectsPage() {
 
       {mapPoints.length > 0 && (
         <div className="mb-6">
-          <ProjectsOperationsMap points={mapPoints} />
+          <ProjectsOperationsMapClient points={mapPoints} />
         </div>
       )}
     </div>

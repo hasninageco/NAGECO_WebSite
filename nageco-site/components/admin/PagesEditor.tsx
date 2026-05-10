@@ -49,7 +49,10 @@ export function PagesEditor({ initialPages, initialNewsPosts }: { initialPages: 
 
     if (!response.ok) {
       const payload = (await response.json().catch(() => null)) as { error?: string; details?: string } | null;
-      toast.error(payload?.error ?? "Failed to save page content");
+      const errorMessage = payload?.details
+        ? `${payload.error ?? "Failed to save page content"}: ${payload.details}`
+        : (payload?.error ?? "Failed to save page content");
+      toast.error(errorMessage);
       return;
     }
     toast.success("Page content saved");
